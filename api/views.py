@@ -3,6 +3,12 @@ from . import api
 from flask_graphql import GraphQLView
 
 
+@api.route("/", methods=["GET"])
+def announce():
+    data = {"data":"Welcome To Recruitr API"}
+    return jsonify(data)
+
+
 @api.route("/generate_otp", methods=["POST"])
 def generate_otp():
     from core.models import User, Verifications

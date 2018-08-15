@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 from flask_login import UserMixin, current_user
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-
+#db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db))
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
