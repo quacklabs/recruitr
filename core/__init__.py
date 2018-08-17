@@ -6,7 +6,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from flask_moment import Moment
-from flask_graphql import GraphQLView
+from flask_cors import CORS
+from flask_jwt import JWT
+#from flask_graphql import GraphQLView
 
 
 class FrontEnd(Flask):
@@ -25,19 +27,19 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 csrf = CSRFProtect()
 moment = Moment()
+jwt = JWT()
+
+
 def create_app():
+    
     app = FrontEnd(__name__)
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{username}:{password}@{hostname}/{databasename}".format(
-        username="root",
-        password="root",
-        hostname="127.0.0.1",
-        databasename="recruitr_db",
+    app_settings = os.getenv(
+        'APP_SETTINGS',
+        'core.config.DevelopmentConfig'
     )
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://username:password@localhost/db_name'
-    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
-    app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config.from_object(app_settings)
     app.debug = True
+    jwt.init_app(app)
     db.init_app(app)
     csrf.init_app(app)
     login_manager.init_app(app)
@@ -47,7 +49,7 @@ def create_app():
     migrate = Migrate(app, db)
     moment.init_app(app)
 
-    from core import models
+    #from core import models
 
     # from .admin import admin as admin_blueprint
     # app.register_blueprint(admin_blueprint, url_prefix='/admin')

@@ -1,8 +1,10 @@
 # from flask_sqlalchemy import SQLAlchemy
 import datetime
+import jwt
 from core import db, login_manager
 from werkzeug.security import generate_password_hash
 from flask_login import UserMixin, current_user
+from flask import current_app as app
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 #db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db))
@@ -32,11 +34,58 @@ class User(UserMixin, db.Model):
         """
         self.password_hash = generate_password_hash(password)
 
-    def register_user(self, ):
+    # def verify_password(self, password):
+    #     """
+    #     Check if hashed password matches actual password
+    #     """
+    #     return check_password_hash(self.password_hash, password)
+
+    # def __init__(self,password):
+    #     self.email = email
+    #     self.phone = phone
+    #     self.password = generate_password_hash(
+    #         password, app_settings.get('BCRYPT_LOG_ROUNDS')
+    #     ).decode()
+    #     self.registered_on = datetime.datetime.now()
+        
+
+    def encode_auth_token(self, user_id):
         """
-        Register a new user
+        Generates the Auth Token
+        :return: string
         """
-        return "ok"
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': user_id
+            }
+            return jwt.encode(
+                payload,
+                app.config['SECRET_KEY'],
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
+    
+    @staticmethod
+    def decode_auth_token(auth_token):
+        """
+        Validates the auth token
+        :param auth_token:
+        :return: integer|string
+        """
+        try:
+            payload = jwt.decode(auth_token, app.config['SECRET_KEY'])
+            #is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
+            # if is_blacklisted_token:
+            #     return 'Token blacklisted. Please log in again.'
+            # else:
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired. Please log in again.'
+        except jwt.InvalidTokenError:
+            return 'Invalid token. Please log in again.'
 
 class Verifications(db.Model):
 
