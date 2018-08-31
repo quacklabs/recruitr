@@ -7,6 +7,8 @@ app = create_app()
 
 manager = Manager(app)
 
+
+
 @manager.command
 def create_db():
     """Creates the db tables."""

@@ -25,6 +25,10 @@ class BaseConfig:
     BCRYPT_LOG_ROUNDS = 13
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    AUTH0_DOMAIN = 'quacklabs.eu.auth0.com'
+    API_AUDIENCE = "https://recruitr.org/auth0/api"
+    ALGORITHMS = ["RS256"]
+
 
 class DevelopmentConfig(BaseConfig):
     """Development configuration."""

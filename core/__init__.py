@@ -11,6 +11,8 @@ from flask_jwt import JWT
 #from flask_graphql import GraphQLView
 
 
+
+
 class FrontEnd(Flask):
     jinja_options = Flask.jinja_options.copy()
     jinja_options.update(dict(

@@ -34,6 +34,21 @@ class User(UserMixin, db.Model):
         """
         self.password_hash = generate_password_hash(password)
 
+    @classmethod
+    def authenticate(cls, **kwargs):
+        email = kwargs.get('email')
+        password = kwargs.get('password')
+
+        if not email or not password:
+            return None
+
+        user = cls.query.filter_by(email=email).first()
+        if not user or not check_password_hash(user.password, password):
+            return None
+
+        return user
+    
+    
     # def verify_password(self, password):
     #     """
     #     Check if hashed password matches actual password
